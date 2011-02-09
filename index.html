@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>foursquare push api sample</title>
+</head>
+<body>
+  <div id="auth"></div>
+  <div>
+    <p>Checkins that have been pushed to this server:</p>
+    <table id="checkins" border=1>
+      <tr>
+        <td>Checkin ID</td>
+        <td>Venue Name (or Shout)</td>
+        <td>Time</td>
+      </tr>
+    </table>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <script type="text/javascript">
+    $.getJSON('/config',
+              function(config) {
+                $('#auth').append('<a href="'+config.auth_uri+'">OAuth</a>');
+              });
+    $.getJSON('/fetch',
+              function(checkins) {
+                for (var i = 0; i < checkins.length; ++i) {
+                  var checkin = checkins[i];
+                  var venueOrShout = '';
+                  if (checkin.venue && checkin.venue.name) {
+                    venueOrShout = checkin.venue.name;
+                  } else {
+                    venueOrShout = checkin.shout;
+                  }
+                  var str = ([
+                    '<tr>',
+                      '<td>', checkin.id, '</td>',
+                      '<td>', venueOrShout, '</td>',
+                      '<td>', (new Date(checkin.createdAt*1000)).toString(), '</td>',
+                    '</tr>'
+                  ]).join('');
+                  $('#checkins').append(str);
+                }
+              });
+  </script>
+</body>
+</html>

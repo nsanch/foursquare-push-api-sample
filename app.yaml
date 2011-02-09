@@ -1,0 +1,16 @@
+application: 4sq-push-api-sample 
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /
+  static_files: index.html
+  upload: index.html
+  expiration: 0
+  login: required
+- url: /checkin
+  script: sample.py
+- url: /.*
+  script: sample.py
+  login: required
