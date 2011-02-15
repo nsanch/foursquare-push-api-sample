@@ -19,21 +19,25 @@ config = {'server':'https://foursquare.com',
           'client_secret': 'YOUR SECRET'}
 
 class UserToken(db.Model):
+  """Contains the user to foursquare_id + oauth token mapping."""
   user = db.UserProperty()
   fs_id = db.StringProperty()
   token = db.StringProperty()
 
 class Checkin(db.Model):
+  """A very simple checkin object, with a denormalized userid for querying."""
   fs_id = db.StringProperty()
   checkin_json = db.TextProperty()
 
 def fetchJson(url):
+  """Does a GET to the specified URL and returns a dict representing its reply."""
   logging.info('fetching url: ' + url)
   result = urllib2.urlopen(url).read()
   logging.info('got back: ' + result)
   return simplejson.loads(result)
 
 class OAuth(webapp.RequestHandler):
+  """Handle the OAuth redirect back to the service."""
   def post(self):
     self.get()
 
@@ -57,6 +61,7 @@ class OAuth(webapp.RequestHandler):
     self.redirect("/")
 
 class ReceiveCheckin(webapp.RequestHandler):
+  """Received a pushed checkin and store it in the datastore."""
   def post(self):
     json = simplejson.loads(self.request.body)
     checkin_json = json['checkin']
@@ -67,6 +72,7 @@ class ReceiveCheckin(webapp.RequestHandler):
     checkin.put()
 
 class FetchCheckins(webapp.RequestHandler):
+  """Fetch the checkins we've received via push for the current user."""
   def get(self):
     user = UserToken.all().filter("user = ", users.get_current_user()).get()
     ret = []
@@ -76,6 +82,7 @@ class FetchCheckins(webapp.RequestHandler):
     self.response.out.write('['+ (','.join(ret)) +']')
 
 class GetConfig(webapp.RequestHandler):
+  """Returns the OAuth URI as JSON so the constants aren't in two places."""
   def get(self):
     uri = '%(server)s/oauth2/authenticate?client_id=%(client_id)s&response_type=code&redirect_uri=%(redirect_uri)s' % config
     self.response.out.write(simplejson.dumps({'auth_uri': uri}))
