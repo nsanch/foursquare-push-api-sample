@@ -1,0 +1,8 @@
+A sample push API consumer for the new foursquare push API.
+
+Has a very simple endpoint for doing OAuth, and a /checkin handler that
+receives a POST with checkin and user JSON. The JSON is expected to have a
+"checkin" key with a corresponding checkin object, and a "user" key with a
+correspoding compact user object. Those formats are described in more depth at
+http://developer.foursquare.com/docs/responses/checkin.html and
+http://developer.foursquare.com/docs/responses/user.html, respectively.
